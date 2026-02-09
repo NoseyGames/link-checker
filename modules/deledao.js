@@ -1,5 +1,4 @@
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+const { JSDOM } = require("jsdom");
 const { fetchURL } = require("../fetch.js");
 const fs = require("fs");
 const path = require("path");
@@ -8,13 +7,11 @@ const dejson = JSON.parse(fs.readFileSync(path.join(__dirname, 'json/deledao.jso
 async function deledao(url) {
     const AUTH_TOKEN = "56afc0786f82c9e6fc4d49b5e63789dd";
 
-    // Normalize URL once at the start
     let normalizedUrl = url;
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
         normalizedUrl = "http://" + url;
     }
 
-    // Start both fetches in parallel
     const categoryPromise = fetchURL("https://cc.deledao.com/GetCategory", {
         method: "POST",
         headers: {
@@ -34,7 +31,6 @@ async function deledao(url) {
         .catch(e => null)
         .finally(() => clearTimeout(timeoutId));
 
-    // Wait for category check first
     const res = await categoryPromise;
 
     if (!res.ok) {
@@ -45,7 +41,6 @@ async function deledao(url) {
     const data = await res.json();
     const domainCats = data.DomainCategoryList ?? [];
 
-    // Fast path: domain is categorized
     if (domainCats.length > 0 && domainCats[0]?.Cats?.[0] !== 0) {
         const catId = domainCats[0].Cats[0];
         
@@ -56,7 +51,6 @@ async function deledao(url) {
         return ["Uncategorized", true];
     }
 
-    // Slow path: HTML is already being fetched in parallel!
     const htmlText = await htmlPromise;
     
     if (!htmlText || htmlText.trim().length === 0) {
