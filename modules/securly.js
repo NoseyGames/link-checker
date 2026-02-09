@@ -1,8 +1,8 @@
 const { fetchURL } = require("../fetch.js");
-const fetchCookie = require("fetch-cookie").default;
+const makeFetchCookie = require("fetch-cookie");
 const { CookieJar } = require("tough-cookie");
 const jar = new CookieJar();
-const fetchWithCookies = fetchCookie(fetchURL, jar);
+const fetchWithCookies = makeFetchCookie(fetchURL, jar);
 
 async function securly(url) {
     try {
