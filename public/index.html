@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Checker | Noir Glass</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>NikeChecker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #ffffff; /* White accents for black theme */
+            --primary: #ffffff;
             --primary-hover: #e2e8f0;
-            --bg-night: #000000; /* Pure black */
-            --glass-bg: rgba(18, 18, 18, 0.7); /* Darker glass */
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --bg-night: #000000;
+            --glass-bg: rgba(15, 15, 15, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --text-main: #ffffff;
             --text-muted: #94a3b8;
             --success: #22c55e;
@@ -30,19 +30,15 @@
             height: 100%;
             overflow: hidden;
             background-color: var(--bg-night);
-            color: var(--text-main);
         }
 
-        /* Star Background Layers */
         #constellation-canvas {
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1;
-            display: block;
         }
 
-        /* UI Layer */
         .ui-wrapper {
             position: relative;
             z-index: 10;
@@ -56,109 +52,130 @@
 
         .container {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             padding: 40px;
-            border-radius: 28px;
+            border-radius: 32px;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
-            max-width: 480px;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9);
+            max-width: 700px;
             width: 100%;
             text-align: center;
             pointer-events: auto;
         }
 
+        /* Forced White Text for Headers */
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.025em;
-            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+            color: #ffffff !important;
         }
 
         .subtitle {
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            font-size: 0.85rem;
+            color: #ffffff !important; /* Changed from muted to white */
+            margin-bottom: 30px;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.15em;
+            opacity: 0.9;
+        }
+
+        .input-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         input[type="text"] {
-            width: 100%;
+            flex: 1;
             padding: 16px 20px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            border-radius: 14px;
             outline: none;
             color: white;
             transition: all 0.2s ease;
-            margin-bottom: 16px;
         }
 
-        input[type="text"]:focus {
-            border-color: rgba(255, 255, 255, 0.5);
-            background: rgba(255, 255, 255, 0.08);
-        }
+        input[type="text"]:focus { border-color: rgba(255, 255, 255, 0.4); }
 
         button {
-            width: 100%;
             background: var(--primary);
-            color: #000; /* Black text on white button */
+            color: #000;
             border: none;
-            padding: 16px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            border-radius: 12px;
+            padding: 0 30px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            border-radius: 14px;
             cursor: pointer;
+            text-transform: uppercase;
             transition: all 0.2s ease;
         }
 
-        button:hover {
-            background: var(--primary-hover);
-            transform: scale(1.01);
+        button:hover { transform: scale(1.02); background: var(--primary-hover); }
+
+        #terminal-log {
+            display: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #ffffff; /* Changed from green to white */
+            text-align: left;
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 80px;
+            overflow: hidden;
         }
 
-        /* Result Cards */
         .results-wrapper {
             margin-top: 30px;
-            text-align: left;
             display: none;
-            max-height: 280px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-height: 350px;
             overflow-y: auto;
-            padding-right: 5px;
+            padding-right: 8px;
         }
 
         .filter-card {
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-radius: 14px;
-            margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            text-align: left;
         }
 
         .blocked { border-left: 3px solid var(--danger); }
         .allowed { border-left: 3px solid var(--success); }
 
+        .filter-name { font-weight: 700; font-size: 0.7rem; letter-spacing: 0.03em; color: #fff; }
+        .filter-cat { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+
         .status-pill {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 800;
-            letter-spacing: 0.03em;
             text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
-        .blocked .status-pill { color: var(--danger); border: 1px solid var(--danger); }
-        .allowed .status-pill { color: var(--success); border: 1px solid var(--success); }
+        .blocked .status-pill { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .allowed .status-pill { color: var(--success); background: rgba(34, 197, 94, 0.1); }
 
-        /* Custom Scrollbar */
-        .results-wrapper::-webkit-scrollbar { width: 3px; }
-        .results-wrapper::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -167,13 +184,16 @@
 
     <div class="ui-wrapper">
         <div class="container">
-            <h1>Link Checker</h1>
-            <p class="subtitle">Bypass Protocol Verification</p>
+          <h1>NikeChecker | Link Tester</h1>
+            <p class="subtitle">Your school's settings may be different! Always be 100% sure.</p>
             
-            <input type="text" id="urlInput" placeholder="Enter target domain..." spellcheck="false">
-            <button id="checkBtn" onclick="handleCheck()">Run Check</button>
+            <div class="input-box">
+                <input type="text" id="urlInput" placeholder="Enter Domain To Check..." spellcheck="false">
+                <button id="checkBtn" onclick="handleCheck()">Scan</button>
+            </div>
 
-            <div id="errorMessage" style="color: var(--danger); margin-top: 15px; font-size: 0.8rem; display: none;"></div>
+            <div id="terminal-log"></div>
+            <div id="errorMessage" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;"></div>
 
             <div class="results-wrapper" id="resultsWrapper">
                 <div class="filter-grid" id="filterGrid"></div>
@@ -182,110 +202,105 @@
     </div>
 
     <script>
-        /* --- STAR BACKGROUND LOGIC --- */
+        /* --- STAR LOGIC --- */
         const canvas = document.getElementById('constellation-canvas');
         const ctx = canvas.getContext('2d');
         let points = [];
-        const pointCount = 55; 
-        const maxDistance = 180; 
-        const speed = 0.5;
+        const pointCount = 50;
+        const maxDist = 200;
+        const speed = 0.15;
 
         function initStars() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             points = [];
             for (let i = 0; i < pointCount; i++) {
-                points.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * speed,
-                    vy: (Math.random() - 0.5) * speed,
-                    radius: Math.random() * 1.2 + 0.4
-                });
+                points.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*speed, vy: (Math.random()-0.5)*speed, radius: Math.random()*1.2 });
             }
         }
 
         function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0,0,canvas.width, canvas.height);
             points.forEach((p, i) => {
                 p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
+                if(p.x<0||p.x>canvas.width) p.vx*=-1;
+                if(p.y<0||p.y>canvas.height) p.vy*=-1;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+                ctx.fillStyle = "rgba(255,255,255,0.3)";
                 ctx.fill();
-
-                for (let j = i + 1; j < points.length; j++) {
+                for (let j = i+1; j < points.length; j++) {
                     const p2 = points[j];
-                    const dx = p.x - p2.x;
-                    const dy = p.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < maxDistance) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        // Neutral gray lines
-                        ctx.strokeStyle = `rgba(200, 200, 200, ${1 - dist / maxDistance - 0.5})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
+                    const d = Math.sqrt((p.x-p2.x)**2 + (p.y-p2.y)**2);
+                    if (d < maxDist) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(150,150,150,${1 - d/maxDist - 0.6})`;
+                        ctx.lineWidth = 0.5; ctx.stroke();
                     }
                 }
             });
             requestAnimationFrame(animateStars);
         }
-
         window.addEventListener('resize', initStars);
-        initStars();
-        animateStars();
+        initStars(); animateStars();
 
-        /* --- API CHECKER LOGIC --- */
+        /* --- LOGIC --- */
         async function handleCheck() {
             const input = document.getElementById('urlInput');
-            const grid = document.getElementById('filterGrid');
+            const terminal = document.getElementById('terminal-log');
             const wrapper = document.getElementById('resultsWrapper');
-            const err = document.getElementById('errorMessage');
+            const grid = document.getElementById('filterGrid');
             
-            let url = input.value.trim();
+            let url = input.value.trim().replace(/^https?:\/\//, '').split('/')[0];
             if (!url) return;
 
-            url = url.replace(/^https?:\/\//, '').split('/')[0];
-            err.style.display = 'none';
             wrapper.style.display = 'none';
+            terminal.style.display = 'block';
+            terminal.innerHTML = "";
+            
+            const logSteps = [
+                `> Initiating handshake with ${url}...`,
+                `> Bypassing local DNS cache...`,
+                `> Querying 16 filter modules...`,
+                `> Decoding response packets...`
+            ];
+
+            for(let step of logSteps) {
+                terminal.innerHTML += `<div>${step}</div>`;
+                terminal.scrollTop = terminal.scrollHeight;
+                await new Promise(r => setTimeout(r, 400));
+            }
 
             try {
-                // Fetch data (assumes backend endpoint /check exists)
                 const response = await fetch(`/check?url=${encodeURIComponent(url)}`);
                 const data = await response.json();
-                
-                if (data.error) throw new Error(data.error);
+                terminal.style.display = 'none';
 
                 grid.innerHTML = '';
                 Object.entries(data.reports).forEach(([name, result]) => {
                     let isBlocked = false;
-                    let cat = "N/A";
-
+                    let cat = "Unknown";
+                    
                     if (Array.isArray(result)) [cat, isBlocked] = result;
-                    else if (typeof result === 'object') { cat = result.category; isBlocked = result.blocked; }
+                    else if (typeof result === 'object') { cat = result.category || "N/A"; isBlocked = result.blocked; }
                     else { isBlocked = true; cat = result; }
 
                     const card = document.createElement('div');
                     card.className = `filter-card ${isBlocked ? 'blocked' : 'allowed'}`;
                     card.innerHTML = `
                         <div>
-                            <div style="font-weight:700; font-size:0.75rem; letter-spacing:0.02em;">${name.toUpperCase()}</div>
-                            <div style="font-size:0.7rem; color:var(--text-muted)">${cat}</div>
+                            <div class="filter-name">${name.toUpperCase()}</div>
+                            <div class="filter-cat">${cat}</div>
                         </div>
                         <span class="status-pill">${isBlocked ? 'Blocked' : 'Clear'}</span>
                     `;
                     grid.appendChild(card);
                 });
-                wrapper.style.display = 'block';
 
+                wrapper.style.display = 'block';
             } catch (e) {
-                err.innerText = "System Failure: " + e.message;
-                err.style.display = 'block';
+                terminal.style.display = 'none';
+                alert("Scan failed.");
             }
         }
     </script>
