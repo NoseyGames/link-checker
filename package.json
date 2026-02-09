@@ -1,1 +1,9 @@
-npm install express node-fetch@2 ws jsdom fetch-cookie tough-cookie dotenv
+"dependencies": {
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "fetch-cookie": "^2.1.0",
+    "jsdom": "^23.0.0",
+    "node-fetch": "^2.7.0",
+    "tough-cookie": "^4.1.3",
+    "ws": "^8.16.0"
+  }
