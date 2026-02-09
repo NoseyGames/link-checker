@@ -22,7 +22,7 @@ async function securly(url) {
         return [category,status.replace("\n","") === "ALLOW" ? false : true];
     } catch (err) {
         console.warn("Securly Error:", err);
-		return `Error`;
+        return `Error`;
     }
 }
 
